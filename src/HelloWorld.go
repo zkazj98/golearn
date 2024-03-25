@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"reflect"
 	"sort"
 )
 
@@ -288,7 +289,7 @@ func main() {
 	a.Less(1, 2)
 	fmt.Println(aa)*/
 
-	var m Mover
+	/*var m Mover
 
 	m = &Daoge{}
 	v, ok := m.(*Daoge)
@@ -298,7 +299,69 @@ func main() {
 	str := "dsad"
 	justifyType(str)
 
-	fmt.Printf("%T", m)
+	fmt.Printf("%T", m)*/
+	/*var a int64 = 3
+	reflectSetValue2(&a)*/
+
+	var a *int
+	//指针为空那么就返回true 有值返回false
+	fmt.Println("var a *int IsNil:", reflect.ValueOf(a).IsNil())
+	//参数无效返回false 有效返回true
+	fmt.Println("nil IsValid:", reflect.ValueOf(nil).IsValid())
+
+	// 实例化一个匿名结构体
+	b := struct{}{}
+	// 尝试从结构体中查找"abc"字段
+	fmt.Println("不存在的结构体成员:", reflect.ValueOf(b).FieldByName("abc").IsValid())
+	// 尝试从结构体中查找"abc"方法
+	fmt.Println("不存在的结构体方法:", reflect.ValueOf(b).MethodByName("abc").IsValid())
+	// map
+	c := map[string]int{}
+	// 尝试从map中查找一个不存在的键
+	fmt.Println("map中不存在的键：", reflect.ValueOf(c).MapIndex(reflect.ValueOf("娜扎")).IsValid())
+
+}
+
+func reflectSetValue1(x interface{}) {
+	v := reflect.ValueOf(x)
+	b := v.IsNil()
+	fmt.Println(b)
+	if v.Kind() == reflect.Int64 {
+		v.SetInt(100)
+	}
+}
+
+func reflectSetValue2(x interface{}) {
+	v := reflect.ValueOf(x)
+	b := v.IsNil()
+	fmt.Println(b)
+	if v.Elem().Kind() == reflect.Int64 {
+		v.Elem().SetInt(100)
+	}
+}
+
+func reflectType(a interface{}) {
+	v := reflect.TypeOf(a)
+
+	fmt.Printf("type Type:%v  Kind:%v \n", v.Name(), v.Kind())
+}
+
+func reflectValue(i interface{}) {
+	v := reflect.ValueOf(i)
+	k := v.Kind()
+
+	switch k {
+	case reflect.Int64:
+		// v.Int()从反射中获取整型的原始值，然后通过int64()强制类型转换
+		fmt.Printf("type is int64, value is %d\n", int64(v.Int()))
+	case reflect.Float32:
+		// v.Float()从反射中获取浮点型的原始值，然后通过float32()强制类型转换
+		fmt.Printf("type is float32, value is %f\n", float32(v.Float()))
+	case reflect.Float64:
+		// v.Float()从反射中获取浮点型的原始值，然后通过float64()强制类型转换
+		fmt.Printf("type is float64, value is %f\n", float64(v.Float()))
+
+	}
 }
 
 func justifyType(x interface{}) {

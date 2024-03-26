@@ -335,12 +335,25 @@ func main() {
 	fmt.Println("字段长 :", size)
 	time.Sleep(time.Second)
 	wg.Wait()*/
-	var t chan int
-	t = make(chan int, 10)
-	t <- 100
-	close(t)
-	f2(t)
+	ch := producer()
+	consumer(ch)
 
+}
+
+func producer() <-chan int {
+	ch := make(chan int, 2)
+	ch <- 100
+	ch <- 200
+	close(ch)
+	return ch
+}
+
+func consumer(ch <-chan int) {
+	sum := 0
+	for i := range ch {
+		sum += i
+	}
+	fmt.Println(sum)
 }
 
 func f2(ch chan int) {

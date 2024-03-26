@@ -8,6 +8,7 @@ import (
 	"os"
 	"reflect"
 	"sort"
+	"sync"
 )
 
 const (
@@ -321,6 +322,7 @@ func main() {
 		c := map[string]int{}
 		// 尝试从map中查找一个不存在的键
 		fmt.Println("map中不存在的键：", reflect.ValueOf(c).MapIndex(reflect.ValueOf("娜扎")).IsValid())*/
+	/*wg.Add(1)
 	s := &School{
 		name: "ja",
 		person: Person{
@@ -328,8 +330,38 @@ func main() {
 			age:  42,
 		},
 	}
+	go hello()
 	size := reflect.TypeOf(*s).NumField()
 	fmt.Println("字段长 :", size)
+	time.Sleep(time.Second)
+	wg.Wait()*/
+	var t chan int
+	t = make(chan int, 10)
+	t <- 100
+	close(t)
+	f2(t)
+
+}
+
+func f2(ch chan int) {
+	/*for {
+		v, ok := <-ch
+		if !ok {
+			fmt.Println("通道关了")
+			break
+		}
+		fmt.Printf("v:%#v ok:%#v \n", v, ok)
+	}*/
+	for v := range ch {
+		fmt.Printf("v:%#v \n", v)
+	}
+}
+
+var wg sync.WaitGroup
+
+func hello() {
+	fmt.Println("go fun")
+	wg.Done()
 }
 
 type School struct {

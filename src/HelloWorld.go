@@ -340,6 +340,8 @@ func main() {
 
 }
 
+//发送通道 chan <- int  接受通道 <- chan int
+
 func producer() <-chan int {
 	ch := make(chan int, 2)
 	ch <- 100

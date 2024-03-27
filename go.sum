@@ -1,2 +1,2 @@
-github.com/q1mi/hello v0.1.1 h1:PHgHB5cmyYwvrvUmeEUpCigzemnjz22NW36EsQ/Zf4k=
-github.com/q1mi/hello v0.1.1/go.mod h1:CvYqxxiW4sUSv4IHFFM5UAdVB1dsPD62brSjg9AUzh8=
+golang.org/x/sync v0.6.0 h1:5BMeUDZ7vkXGfEr1x9B4bRcTH4lpkTkpdh0T/J+qjbQ=
+golang.org/x/sync v0.6.0/go.mod h1:Czt+wKu1gCyEFDUtn0jG5QVvpJ6rzVqr5aXyt9drQfk=

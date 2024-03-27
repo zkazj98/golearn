@@ -2,9 +2,14 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"errors"
 	"fmt"
+	"golang.org/x/sync/errgroup"
+	_ "golang.org/x/sync/errgroup"
+	"image"
 	"math"
+	"net/http"
 	"os"
 	"reflect"
 	"sort"
@@ -335,8 +340,209 @@ func main() {
 	fmt.Println("字段长 :", size)
 	time.Sleep(time.Second)
 	wg.Wait()*/
-	ch := producer()
-	consumer(ch)
+	/*ch := producer()
+	consumer(ch)*/
+
+	/*ch1 := make(chan int, 10)
+	ch2 := make(chan int, 10)
+
+	ch1 <- 10
+	ch1 <- 2
+	ch2 <- 3
+	ch2 <- 4
+	ch2 <- 3
+	wg.Add(1)
+	go func() {
+		for {
+			data, ok := <-ch1
+			if ok {
+				fmt.Println("ch1", data)
+			} else {
+				break // 通道已关闭，退出循环
+			}
+		}
+		wg.Done()
+	}()
+	wg.Add(1)
+	go func() {
+		for {
+			data, ok := <-ch2
+			if ok {
+				fmt.Println("ch2", data)
+			} else {
+				break // 通道已关闭，退出循环
+			}
+		}
+		wg.Done()
+	}()
+
+	close(ch1)
+	close(ch2)
+	wg.Wait()*/
+
+	/*ch := make(chan int, 1)
+
+	for i := 0; i < 10; i++ {
+		select {
+		case x := <-ch:
+			fmt.Println(x)
+		case ch <- i:
+
+		}
+	}*/
+	/*ch := make(chan string)
+	go func() {
+		// 这里假设执行一些耗时的操作
+		time.Sleep(3 * time.Second)
+		ch <- "job result"
+	}()
+
+	select {
+	case result := <-ch:
+		fmt.Println(result)
+	case <-time.After(time.Second): // 较小的超时时间
+		return
+	}*/
+
+	/*wgg.Add(2)
+	addT()
+	addT()
+	wgg.Wait()
+	fmt.Println(x)*/
+
+	//并发map
+	/*var mz = sync.Map{}
+	wg := sync.WaitGroup{}
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func(n int) {
+			key := strconv.Itoa(n)
+			mz.Store(key, n)
+			v, _ := mz.Load(key)
+			fmt.Printf("k=:%v,v:=%v\n", key, v)
+			wg.Done()
+		}(i)
+	}
+	wg.Wait()*/
+	ctx := context.Background()
+	err := fetchUrlDemo4(ctx)
+	if err != nil {
+		fmt.Println("fetchUrlDemo3 error:", err)
+	}
+}
+
+func fetchUrlDemo4(ctx context.Context) error {
+	g, ctx := errgroup.WithContext(ctx) // 创建等待组（类似sync.WaitGroup）
+	var urls = []string{
+		"http://www.liwenzhou.com",
+		"http://www.yixieqitawangzhi.com",
+	}
+	for _, url := range urls {
+		url := url // 注意此处声明新的变量
+		// 启动一个goroutine去获取url内容
+		g.Go(func() error {
+			resp, err := http.Get(url)
+			if err != nil {
+				return err // 返回错误
+			}
+			defer resp.Body.Close()
+			if resp.StatusCode != http.StatusOK {
+				return fmt.Errorf("unexpected status code: %v \n", resp.StatusCode)
+			}
+			fmt.Printf("获取%s成功\n", url)
+			return nil
+		})
+	}
+	if err := g.Wait(); err != nil {
+		// 处理可能出现的错误
+		fmt.Println("error:", err)
+		return err
+	}
+	fmt.Println("所有goroutine均成功")
+	return nil
+}
+
+// fetchUrlDemo2 使用errgroup并发获取url内容
+func fetchUrlDemo3() error {
+	g := new(errgroup.Group) // 创建等待组（类似sync.WaitGroup）
+	var urls = []string{
+		"http://pkg.go.dev",
+		"http://www.liwenzhou.com",
+		"http://www.yixieqitawangzhi.com",
+	}
+	for _, url := range urls {
+		url := url // 注意此处声明新的变量
+		// 启动一个goroutine去获取url内容
+		g.Go(func() error {
+			resp, err := http.Get(url)
+			if err == nil {
+				fmt.Printf("获取%s成功\n", url)
+				resp.Body.Close()
+			}
+			return err // 返回错误
+		})
+	}
+	if err := g.Wait(); err != nil {
+		// 处理可能出现的错误
+		fmt.Println(err)
+		return err
+	}
+	fmt.Println("所有goroutine均成功")
+	return nil
+}
+
+func fetchUrlDemo2() error {
+	g := new(errgroup.Group)
+	var urls = []string{
+		"http://www.yixieqitawangzh1i.com",
+		"http://www.yixieqitawangzh2i.com",
+		"http://www.yixieqitawangzh3i.com",
+	}
+	for _, v := range urls {
+		url := v
+		g.Go(func() error {
+			res, err := http.Get(url)
+			if err == nil {
+				fmt.Printf("获取%s成功 \n", url)
+				res.Body.Close()
+			}
+			return err
+		})
+	}
+	if err := g.Wait(); err != nil {
+		fmt.Println(err)
+		return err
+	}
+	fmt.Println("所有goroutine均成功")
+	return nil
+}
+
+var mm = make(map[string]int)
+
+func get(key string) int {
+	return mm[key]
+}
+
+func set(key string, value int) {
+	mm[key] = value
+}
+
+var icons map[string]image.Image
+var (
+	x             int64
+	wgg           sync.WaitGroup
+	m             sync.Mutex
+	re            sync.RWMutex
+	loadIconsOnce sync.Once
+)
+
+func addT() {
+	for i := 0; i < 5000; i++ {
+		m.Lock()
+		x += 1
+		m.Unlock()
+	}
+	wgg.Done()
 
 }
 

@@ -2,4 +2,4 @@ module project
 
 go 1.18
 
-require github.com/q1mi/hello v0.1.1
+require golang.org/x/sync v0.6.0
